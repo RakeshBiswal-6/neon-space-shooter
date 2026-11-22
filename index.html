@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#070817">
+  <meta name="description" content="A neon space shooter mini-game by Rakesh Biswal.">
+  <title>NEON STRIKE // Rakesh Biswal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="https://github.com/RakeshBiswal-6" target="_blank" rel="noreferrer">
+        <span class="brand-mark">RB<span>_</span></span>
+        <span>Rakesh<span class="muted">.dev</span></span>
+      </a>
+      <div class="top-status"><span class="status-dot"></span> SYSTEM ONLINE <span class="status-divider">/</span> ARCADE v1.0</div>
+      <a class="github-link" href="https://github.com/RakeshBiswal-6" target="_blank" rel="noreferrer">GITHUB ↗</a>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow"><span></span> PERSONAL ARCADE // 001</div>
+      <h1>NEON <span>STRIKE</span></h1>
+      <p class="subtitle">DEFEND THE GALAXY. BEAT YOUR HIGH SCORE.</p>
+      <div class="rule"><i></i><span>INSERT SKILL. DESTROY BUGS.</span><i></i></div>
+    </section>
+
+    <section class="game-panel" aria-label="Space shooter game">
+      <div class="hud">
+        <div class="hud-item"><span class="hud-label">SCORE</span><strong id="score">000000</strong></div>
+        <div class="hud-item"><span class="hud-label">BEST</span><strong id="best">000000</strong></div>
+        <div class="hud-item lives-box"><span class="hud-label">HULL</span><strong id="lives">♥ ♥ ♥</strong></div>
+        <div class="hud-item level-box"><span class="hud-label">WAVE</span><strong id="wave">01</strong></div>
+      </div>
+
+      <div class="canvas-wrap">
+        <canvas id="game" width="900" height="540" aria-label="Space shooter playfield"></canvas>
+        <div class="overlay" id="overlay">
+          <div class="overlay-card">
+            <div class="mini-label" id="overlay-kicker">READY, PILOT?</div>
+            <h2 id="overlay-title">THE GALAXY<br><span>NEEDS YOU.</span></h2>
+            <p id="overlay-copy">Destroy the incoming drones and survive as long as you can.</p>
+            <button id="start-btn" class="primary-btn">START MISSION <span>→</span></button>
+            <div class="keys-hint">MOVE <b>←</b> <b>→</b> / <b>A</b> <b>D</b> <i>•</i> FIRE <b>SPACE</b></div>
+          </div>
+        </div>
+        <div class="pause-indicator hidden" id="pause-indicator">MISSION PAUSED</div>
+        <div class="scanlines"></div>
+      </div>
+
+      <div class="game-footer">
+        <div class="control-note"><span class="keycap">←</span><span class="keycap">→</span> MOVE <span class="keycap">SPACE</span> FIRE <span class="keycap">P</span> PAUSE</div>
+        <div class="sound-note"><span class="live-dot"></span> <span id="status-text">AWAITING PILOT</span></div>
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="info-card">
+        <div class="card-icon">⌁</div>
+        <div><h3>MISSION BRIEF</h3><p>Take control of your starfighter. Dodge enemy fire, clear each wave, and push your score to the limit.</p></div>
+      </article>
+      <article class="info-card">
+        <div class="card-icon">⌘</div>
+        <div><h3>CONTROLS</h3><p>Keyboard: Arrow keys or A/D to move, Space to shoot, P to pause. On mobile, use the on-screen controls.</p></div>
+      </article>
+      <article class="info-card signature">
+        <div class="card-icon">✦</div>
+        <div><h3>BUILT BY RAKESH</h3><p>A little arcade energy for a developer profile. Explore more projects on GitHub.</p><a href="https://github.com/RakeshBiswal-6" target="_blank" rel="noreferrer">VIEW PROFILE ↗</a></div>
+      </article>
+    </section>
+
+    <div class="mobile-controls" aria-label="Touch controls">
+      <button id="left-btn" aria-label="Move left">←</button>
+      <button id="fire-btn" class="fire-control" aria-label="Fire">FIRE</button>
+      <button id="right-btn" aria-label="Move right">→</button>
+    </div>
+    <footer>© <span id="year"></span> RAKESH BISWAL <span>•</span> BUILT TO PLAY, CODED TO CREATE</footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
