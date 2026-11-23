@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#070817">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="description" content="NEON STRIKE - 10-Stage Space Shooter Game by Rakesh Biswal. Defend the galaxy, defeat alien armadas, and destroy the Stage 10 Mega Boss!">
   <title>NEON STRIKE // Rakesh Biswal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,7 +27,7 @@
     <section class="hero">
       <div class="eyebrow"><span></span> PERSONAL ARCADE // 001</div>
       <h1>NEON <span>STRIKE</span></h1>
-      <p class="subtitle">10 STAGES OF ALIEN WARFARE // DEFEAT THE STAGE 10 MEGA BOSS</p>
+      <p class="subtitle">10 STAGES OF ALIEN WARFARE // DEFEAT THE MEGA BOSS</p>
       <div class="rule"><i></i><span>3 LIVES • DESTROY ALIEN FLEETS • SAVE THE GALAXY</span><i></i></div>
     </section>
 
@@ -33,20 +35,21 @@
       <div class="hud">
         <div class="hud-item"><span class="hud-label">SCORE</span><strong id="score">000000</strong></div>
         <div class="hud-item"><span class="hud-label">BEST</span><strong id="best">000000</strong></div>
-        <div class="hud-item lives-box"><span class="hud-label">HULL LIVES</span><strong id="lives">♥ ♥ ♥</strong></div>
+        <div class="hud-item lives-box"><span class="hud-label">HULL</span><strong id="lives">♥ ♥ ♥</strong></div>
         <div class="hud-item level-box"><span class="hud-label">STAGE</span><strong id="wave">01 / 10</strong></div>
-        <div class="hud-item stage-target-box"><span class="hud-label">OBJECTIVE</span><strong id="stage-target">10 REMAINING</strong></div>
+        <div class="hud-item stage-target-box"><span class="hud-label">TARGET</span><strong id="stage-target">8 LEFT</strong></div>
       </div>
 
       <div class="canvas-wrap">
-        <canvas id="game" width="900" height="540" aria-label="Space shooter playfield"></canvas>
+        <canvas id="game" aria-label="Space shooter playfield"></canvas>
         <div class="overlay" id="overlay">
           <div class="overlay-card">
             <div class="mini-label" id="overlay-kicker">PILOT READY?</div>
             <h2 id="overlay-title">THE GALAXY<br><span>NEEDS YOU.</span></h2>
             <p id="overlay-copy">Destroy the alien armadas across 10 epic stages. Watch out for enemy bullets and collisions — 3 hits and your ship is destroyed. In Stage 10, the Mega Boss awaits!</p>
             <button id="start-btn" class="primary-btn">START MISSION <span>→</span></button>
-            <div class="keys-hint">MOVE <b>←</b> <b>→</b> / <b>A</b> <b>D</b> <i>•</i> FIRE <b>SPACE</b> <i>•</i> SOUND <b>S</b> <i>•</i> PAUSE <b>P</b></div>
+            <div class="keys-hint desktop-only">MOVE <b>←</b> <b>→</b> / <b>A</b> <b>D</b> <i>•</i> FIRE <b>SPACE</b> <i>•</i> PAUSE <b>P</b></div>
+            <div class="keys-hint mobile-only">TAP THE BUTTONS BELOW TO PLAY</div>
           </div>
         </div>
         <div class="pause-indicator hidden" id="pause-indicator">MISSION PAUSED</div>
@@ -54,34 +57,36 @@
       </div>
 
       <div class="game-footer">
-        <div class="control-note"><span class="keycap">←</span><span class="keycap">→</span> / <span class="keycap">A</span><span class="keycap">D</span> MOVE <span class="keycap">SPACE</span> FIRE <span class="keycap">P</span> PAUSE</div>
+        <div class="control-note desktop-only"><span class="keycap">←</span><span class="keycap">→</span> MOVE <span class="keycap">SPACE</span> FIRE <span class="keycap">P</span> PAUSE</div>
         <div class="sound-controls">
-          <button id="sound-btn" class="sound-toggle-btn" title="Toggle Sound (Press S)">🔊 SOUND: ON</button>
+          <button id="sound-btn" class="sound-toggle-btn" title="Toggle Sound">🔊 ON</button>
+          <button id="fullscreen-btn" class="sound-toggle-btn" title="Fullscreen">⛶ FULL</button>
         </div>
         <div class="sound-note"><span class="live-dot"></span> <span id="status-text">AWAITING PILOT</span></div>
       </div>
     </section>
 
+    <div class="mobile-controls" aria-label="Touch controls">
+      <button id="left-btn" aria-label="Move left">◀</button>
+      <button id="fire-btn" class="fire-control" aria-label="Fire">🔥 FIRE</button>
+      <button id="right-btn" aria-label="Move right">▶</button>
+    </div>
+
     <section class="bottom-grid">
       <article class="info-card">
         <div class="card-icon">⌁</div>
-        <div><h3>10-STAGE CAMPAIGN</h3><p>Survive 9 escalating waves of alien fighters, interceptors, and cruisers. At Stage 10, battle the colossal Alien Mega Boss to achieve total victory!</p></div>
+        <div><h3>10-STAGE CAMPAIGN</h3><p>Survive 9 escalating waves of alien fighters, interceptors, and cruisers. At Stage 10, battle the colossal Alien Mega Boss!</p></div>
       </article>
       <article class="info-card">
         <div class="card-icon">⌘</div>
-        <div><h3>3 LIVES & POWER-UPS</h3><p>Avoid touching alien ships or taking hits from enemy bullets. Collect repair capsules (+1 Life), Triple Shot, and Rapid Fire drops!</p></div>
+        <div><h3>3 LIVES & POWER-UPS</h3><p>Avoid alien ships and enemy bullets. Collect repair capsules (+1 Life), Triple Shot, and Rapid Fire drops!</p></div>
       </article>
       <article class="info-card signature">
         <div class="card-icon">✦</div>
-        <div><h3>BUILT BY RAKESH</h3><p>A neon arcade experience crafted with pure canvas & Web Audio synth. Explore more projects on GitHub.</p><a href="https://github.com/RakeshBiswal-6" target="_blank" rel="noreferrer">VIEW PROFILE ↗</a></div>
+        <div><h3>BUILT BY RAKESH</h3><p>A neon arcade experience crafted with pure canvas & Web Audio synth.</p><a href="https://github.com/RakeshBiswal-6" target="_blank" rel="noreferrer">VIEW PROFILE ↗</a></div>
       </article>
     </section>
 
-    <div class="mobile-controls" aria-label="Touch controls">
-      <button id="left-btn" aria-label="Move left">←</button>
-      <button id="fire-btn" class="fire-control" aria-label="Fire">FIRE</button>
-      <button id="right-btn" aria-label="Move right">→</button>
-    </div>
     <footer>© <span id="year"></span> RAKESH BISWAL <span>•</span> BUILT TO PLAY, CODED TO CREATE</footer>
   </main>
   <script src="game.js"></script>
