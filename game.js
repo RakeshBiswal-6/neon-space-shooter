@@ -13,26 +13,61 @@
   const pauseIndicator = $("pause-indicator"), soundBtn = $("sound-btn");
   const fullscreenBtn = $("fullscreen-btn");
 
-  // --- Dynamic Canvas Sizing ---
-  // The game world always uses a virtual coordinate system of 900x540 (5:3 ratio).
-  // The canvas pixel resolution adapts to the container to stay sharp on any screen.
+  // --- Dynamic Responsive Canvas Sizing (Zero-Clipping on All Screens) ---
   const GAME_W = 900, GAME_H = 540;
   let W = GAME_W, H = GAME_H;
   let canvasScale = 1;
 
   function resizeCanvas() {
     const wrap = canvas.parentElement;
-    const rect = wrap.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2); // cap at 2x for perf
-    const displayW = Math.floor(rect.width);
-    const displayH = Math.floor(displayW * (3 / 5)); // maintain 5:3 aspect ratio
+    if (!wrap) return;
 
-    canvas.width = displayW * dpr;
-    canvas.height = displayH * dpr;
+    const hud = document.querySelector(".hud");
+    const footer = document.querySelector(".game-footer");
+    const mobileControls = document.querySelector(".mobile-controls");
+    const isFullscreen = !!document.fullscreenElement;
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const maxW = Math.floor(wrap.clientWidth || window.innerWidth - 20);
+
+    // Calculate maximum available height so the entire game screen fits WITHOUT scrolling
+    const hudH = hud ? hud.offsetHeight : 44;
+    const footH = footer ? footer.offsetHeight : 40;
+    const mobH = (mobileControls && window.getComputedStyle(mobileControls).display !== "none")
+      ? mobileControls.offsetHeight : 0;
+
+    // Remaining height budget in current viewport
+    let maxH;
+    if (isFullscreen) {
+      maxH = window.innerHeight - hudH - footH - 12;
+    } else {
+      const topBuffer = window.innerWidth <= 640 ? 60 : 130;
+      const budget = window.innerHeight - (hudH + footH + mobH + topBuffer);
+      // Ensure canvas fits comfortably on small laptops, tablets & phones
+      maxH = Math.max(220, Math.min(540, budget));
+    }
+
+    // Maintain 5:3 aspect ratio
+    let displayW = maxW;
+    let displayH = Math.floor(displayW * (3 / 5));
+
+    // If height exceeds the screen budget, constrain by height!
+    if (displayH > maxH) {
+      displayH = Math.floor(maxH);
+      displayW = Math.floor(displayH * (5 / 3));
+    }
+
+    // Ensure it doesn't exceed width either
+    if (displayW > maxW) {
+      displayW = maxW;
+      displayH = Math.floor(displayW * (3 / 5));
+    }
+
+    canvas.width = Math.floor(displayW * dpr);
+    canvas.height = Math.floor(displayH * dpr);
     canvas.style.width = displayW + "px";
     canvas.style.height = displayH + "px";
 
-    // Scale context so game logic always works in 900x540 virtual coords
     canvasScale = (displayW * dpr) / GAME_W;
     W = GAME_W;
     H = GAME_H;
@@ -40,7 +75,8 @@
 
   resizeCanvas();
   window.addEventListener("resize", resizeCanvas);
-  // Also resize after orientation change (mobile)
+  document.addEventListener("fullscreenchange", () => setTimeout(resizeCanvas, 100));
+  document.addEventListener("webkitfullscreenchange", () => setTimeout(resizeCanvas, 100));
   if (screen.orientation) {
     screen.orientation.addEventListener("change", () => setTimeout(resizeCanvas, 150));
   }
@@ -604,7 +640,14 @@
   function loop(t){const dt=Math.min((t-lastTime)/1000||0,0.033);lastTime=t;update(dt);draw();requestAnimationFrame(loop);}
 
   // --- Events ---
-  startBtn.addEventListener("click",()=>{initAudio();start();});
+  startBtn.addEventListener("click", () => {
+    initAudio();
+    start();
+    const panel = $("game-panel") || document.querySelector(".game-panel");
+    if (panel) {
+      panel.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
   if(soundBtn) soundBtn.addEventListener("click",toggleSound);
   if(fullscreenBtn) fullscreenBtn.addEventListener("click",toggleFullscreen);
 
