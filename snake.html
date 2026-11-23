@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBER SNAKE // Rakesh Biswal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #070817;
+      color: #edf5ff;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .container {
+      max-width: 840px;
+      width: 100%;
+      background: #0c1025;
+      border: 1px solid #414b78;
+      box-shadow: 0 0 35px #54f6ff15;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+    }
+    .header {
+      margin-bottom: 18px;
+    }
+    .kicker {
+      font: 700 11px 'Orbitron', sans-serif;
+      letter-spacing: 0.2em;
+      color: #54f6ff;
+      margin-bottom: 6px;
+    }
+    h1 {
+      font: 800 28px 'Orbitron', sans-serif;
+      letter-spacing: 0.08em;
+      color: #edf5ff;
+    }
+    h1 span { color: #63ffb0; text-shadow: 0 0 16px #63ffb088; }
+    p {
+      color: #8994b8;
+      font-size: 15px;
+      margin-top: 4px;
+    }
+    .stats-bar {
+      display: flex;
+      justify-content: space-around;
+      background: #080c1d;
+      border: 1px solid #283151;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-bottom: 16px;
+      font-family: 'Orbitron', sans-serif;
+    }
+    .stat-item {
+      font-size: 12px;
+      color: #8994b8;
+    }
+    .stat-item strong {
+      color: #54f6ff;
+      font-size: 16px;
+      margin-left: 6px;
+    }
+    .canvas-wrap {
+      position: relative;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #54f6ff44;
+      box-shadow: 0 0 25px #54f6ff22;
+      background: #050716;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16/9;
+    }
+    .controls-hint {
+      margin-top: 16px;
+      color: #7180a7;
+      font: 600 11px 'Orbitron', sans-serif;
+      letter-spacing: 0.08em;
+    }
+    .controls-hint b {
+      color: #54f6ff;
+      border: 1px solid #54f6ff55;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .nav-links {
+      margin-top: 20px;
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+    }
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      font: 700 11px 'Orbitron', sans-serif;
+      letter-spacing: 0.1em;
+      padding: 10px 18px;
+      border-radius: 4px;
+      transition: 0.2s;
+    }
+    .btn-primary {
+      background: #54f6ff18;
+      color: #54f6ff;
+      border: 1px solid #54f6ff66;
+    }
+    .btn-primary:hover {
+      background: #54f6ff33;
+      box-shadow: 0 0 15px #54f6ff44;
+    }
+    .btn-pink {
+      background: #ff4fd818;
+      color: #ff4fd8;
+      border: 1px solid #ff4fd866;
+    }
+    .btn-pink:hover {
+      background: #ff4fd833;
+      box-shadow: 0 0 15px #ff4fd844;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="kicker">AUTONOMOUS ARCADE // 002</div>
+      <h1>NEON <span>SNAKE</span></h1>
+      <p>Autonomous AI Snake eating endless random energy dots! Runs continuously for 5–10+ mins.</p>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">DOTS EATEN: <strong id="dots-count">0</strong></div>
+      <div class="stat-item">RUN TIME: <strong id="timer">00:00</strong></div>
+      <div class="stat-item">MODE: <strong id="mode-text">AUTO AI</strong></div>
+    </div>
+
+    <div class="canvas-wrap">
+      <canvas id="snakeCanvas" width="800" height="450"></canvas>
+    </div>
+
+    <div class="controls-hint">
+      MODE: <b>AUTO-PLAYING</b> • PRESS <b>ARROW KEYS</b> OR <b>W A S D</b> TO TAKE MANUAL CONTROL • PRESS <b>SPACE</b> FOR AUTO-AI
+    </div>
+
+    <div class="nav-links">
+      <a href="index.html" class="btn btn-primary">🚀 PLAY NEON STRIKE (SPACE SHOOTER)</a>
+      <a href="https://github.com/RakeshBiswal-6" target="_blank" class="btn btn-pink">GITHUB PROFILE ↗</a>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    const canvas = document.getElementById("snakeCanvas");
+    const ctx = canvas.getContext("2d");
+    const dotsCountEl = document.getElementById("dots-count");
+    const timerEl = document.getElementById("timer");
+    const modeEl = document.getElementById("mode-text");
+
+    const grid = 18;
+    const cols = Math.floor(canvas.width / grid);
+    const rows = Math.floor(canvas.height / grid);
+
+    let snake = [
+      {x: 10, y: 10},
+      {x: 9, y: 10},
+      {x: 8, y: 10},
+      {x: 7, y: 10},
+      {x: 6, y: 10}
+    ];
+
+    let dir = {x: 1, y: 0};
+    let dots = [];
+    let dotsEaten = 0;
+    let manualMode = false;
+    let startTime = Date.now();
+
+    const dotColors = ["#54f6ff", "#63ffb0", "#ff4fd8", "#ffea54", "#bf6bff"];
+
+    function spawnDot() {
+      if (dots.length < 12) {
+        dots.push({
+          x: Math.floor(Math.random() * cols),
+          y: Math.floor(Math.random() * rows),
+          color: dotColors[Math.floor(Math.random() * dotColors.length)],
+          pulse: Math.random() * Math.PI
+        });
+      }
+    }
+
+    // Initial pool of 8 dots
+    for (let i = 0; i < 8; i++) spawnDot();
+
+    // AI pathfinding: Moves snake towards nearest dot safely
+    function getNextAiDir() {
+      if (!dots.length) return dir;
+      const head = snake[0];
+
+      // Find closest dot
+      let closest = dots[0];
+      let minDist = 99999;
+      for (const d of dots) {
+        const dist = Math.hypot(d.x - head.x, d.y - head.y);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = d;
+        }
+      }
+
+      const possibleDirs = [
+        {x: 1, y: 0},
+        {x: -1, y: 0},
+        {x: 0, y: 1},
+        {x: 0, y: -1}
+      ];
+
+      // Filter out immediate reverse
+      const validDirs = possibleDirs.filter(d => !(d.x === -dir.x && d.y === -dir.y));
+
+      // Score each direction by distance to target and safety
+      let bestDir = dir;
+      let bestScore = -99999;
+
+      for (const d of validDirs) {
+        const nextX = (head.x + d.x + cols) % cols;
+        const nextY = (head.y + d.y + rows) % rows;
+
+        // Check self-collision penalty
+        const collidesWithBody = snake.slice(0, -1).some(seg => seg.x === nextX && seg.y === nextY);
+        if (collidesWithBody) continue;
+
+        const distAfter = Math.hypot(closest.x - nextX, closest.y - nextY);
+        const score = -distAfter; // Closer is better
+
+        if (score > bestScore) {
+          bestScore = score;
+          bestDir = d;
+        }
+      }
+
+      return bestDir;
+    }
+
+    // Timer display
+    setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const m = String(Math.floor(elapsed / 60)).padStart(2, "0");
+      const s = String(elapsed % 60).padStart(2, "0");
+      timerEl.textContent = `${m}:${s}`;
+    }, 1000);
+
+    // Keyboard control
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "w", "W"].includes(e.key) && dir.y === 0) {
+        dir = {x: 0, y: -1}; manualMode = true;
+      } else if (["ArrowDown", "s", "S"].includes(e.key) && dir.y === 0) {
+        dir = {x: 0, y: 1}; manualMode = true;
+      } else if (["ArrowLeft", "a", "A"].includes(e.key) && dir.x === 0) {
+        dir = {x: -1, y: 0}; manualMode = true;
+      } else if (["ArrowRight", "d", "D"].includes(e.key) && dir.x === 0) {
+        dir = {x: 1, y: 0}; manualMode = true;
+      } else if (e.key === " ") {
+        manualMode = false;
+      }
+      modeEl.textContent = manualMode ? "MANUAL (SPACE FOR AI)" : "AUTO AI";
+      modeEl.style.color = manualMode ? "#ff4fd8" : "#63ffb0";
+    });
+
+    // Game loop
+    let frame = 0;
+    setInterval(() => {
+      frame++;
+
+      if (!manualMode) {
+        dir = getNextAiDir();
+      }
+
+      const head = snake[0];
+      const newHead = {
+        x: (head.x + dir.x + cols) % cols,
+        y: (head.y + dir.y + rows) % rows
+      };
+
+      snake.unshift(newHead);
+
+      // Check if food eaten
+      const eatIdx = dots.findIndex(d => d.x === newHead.x && d.y === newHead.y);
+      if (eatIdx !== -1) {
+        dots.splice(eatIdx, 1);
+        dotsEaten++;
+        dotsCountEl.textContent = dotsEaten;
+
+        // Spawn multiple new dots
+        spawnDot();
+        spawnDot();
+      } else {
+        // Limit snake length so it stays fast and responsive indefinitely (5-10+ mins)
+        const maxLength = Math.min(35, 8 + Math.floor(dotsEaten / 3));
+        if (snake.length > maxLength) snake.pop();
+        else snake.pop();
+      }
+
+      // Keep spawning dots up to minimum
+      while (dots.length < 8) spawnDot();
+
+      // --- RENDER ---
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background grid pattern
+      ctx.fillStyle = "#050716";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#54f6ff08";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += grid) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += grid) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+      }
+
+      // Draw Dots
+      dots.forEach(d => {
+        d.pulse = (d.pulse || 0) + 0.1;
+        const glow = 6 + Math.sin(d.pulse) * 3;
+        ctx.save();
+        ctx.shadowColor = d.color;
+        ctx.shadowBlur = glow;
+        ctx.fillStyle = d.color;
+        ctx.fillRect(d.x * grid + 3, d.y * grid + 3, grid - 6, grid - 6);
+        ctx.restore();
+      });
+
+      // Draw Snake
+      snake.forEach((seg, i) => {
+        ctx.save();
+        if (i === 0) {
+          // Snake Head
+          ctx.shadowColor = "#54f6ff";
+          ctx.shadowBlur = 16;
+          ctx.fillStyle = "#54f6ff";
+          ctx.fillRect(seg.x * grid + 1, seg.y * grid + 1, grid - 2, grid - 2);
+
+          // Eyes
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(seg.x * grid + 4, seg.y * grid + 4, 3, 3);
+          ctx.fillRect(seg.x * grid + grid - 7, seg.y * grid + 4, 3, 3);
+        } else {
+          // Snake Body
+          const alpha = Math.max(0.35, 1 - (i / snake.length) * 0.65);
+          ctx.fillStyle = `rgba(84, 246, 255, ${alpha})`;
+          ctx.shadowColor = "#54f6ff";
+          ctx.shadowBlur = 6;
+          ctx.fillRect(seg.x * grid + 2, seg.y * grid + 2, grid - 4, grid - 4);
+        }
+        ctx.restore();
+      });
+
+    }, 85);
+  })();
+  </script>
+</body>
+</html>
