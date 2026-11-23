@@ -220,7 +220,7 @@
 
   try { best = Number(localStorage.getItem("neonStrikeBest") || 0); } catch (_) {}
   bestEl.textContent = fmt(best);
-  $("year").textContent = new Date().getFullYear();
+  if ($("year")) $("year").textContent = new Date().getFullYear();
 
   function fmt(n) { return String(Math.max(0,Math.floor(n))).padStart(6,"0"); }
 
