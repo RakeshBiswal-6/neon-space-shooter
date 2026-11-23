@@ -158,17 +158,19 @@
 
   // --- Game Data & Configurations ---
   const TOTAL_STAGES = 10;
+  // Stage difficulty ramps up gradually: Stage 1 is very easy, Stage 9 is brutal
+  // speedMod multiplies enemy base speed; spawnInterval is seconds between spawns (higher = easier)
   const STAGE_CONFIG = [
-    { name: "ORBITAL FRONTIER", killsRequired: 10, spawnInterval: 1.1, speedMod: 1.0, types: ["scout"] },
-    { name: "ASTEROID SECTOR", killsRequired: 12, spawnInterval: 1.0, speedMod: 1.08, types: ["scout", "interceptor"] },
-    { name: "NEBULA PATROL", killsRequired: 14, spawnInterval: 0.95, speedMod: 1.15, types: ["scout", "interceptor", "zigzag"] },
-    { name: "CYBER CORRIDOR", killsRequired: 16, spawnInterval: 0.9, speedMod: 1.22, types: ["scout", "heavy", "zigzag"] },
-    { name: "ION STORM", killsRequired: 18, spawnInterval: 0.85, speedMod: 1.28, types: ["interceptor", "heavy", "bomber"] },
-    { name: "VOID ABYSS", killsRequired: 20, spawnInterval: 0.8, speedMod: 1.34, types: ["scout", "stealth", "heavy"] },
-    { name: "CRIMSON SQUADRON", killsRequired: 22, spawnInterval: 0.75, speedMod: 1.4, types: ["heavy", "stealth", "bomber"] },
-    { name: "ARMADA VANGUARD", killsRequired: 24, spawnInterval: 0.7, speedMod: 1.46, types: ["interceptor", "heavy", "bomber", "stealth"] },
-    { name: "TITAN'S GATE", killsRequired: 26, spawnInterval: 0.65, speedMod: 1.52, types: ["heavy", "bomber", "stealth", "interceptor"] },
-    { name: "MEGA BOSS: CYBER-COLOSSUS", killsRequired: 1, spawnInterval: 999, speedMod: 1.6, types: ["boss"] }
+    { name: "ORBITAL FRONTIER",       killsRequired: 8,  spawnInterval: 2.0,  speedMod: 0.45, types: ["scout"] },
+    { name: "ASTEROID SECTOR",        killsRequired: 10, spawnInterval: 1.7,  speedMod: 0.55, types: ["scout", "scout", "interceptor"] },
+    { name: "NEBULA PATROL",          killsRequired: 12, spawnInterval: 1.5,  speedMod: 0.65, types: ["scout", "interceptor", "zigzag"] },
+    { name: "CYBER CORRIDOR",         killsRequired: 14, spawnInterval: 1.35, speedMod: 0.75, types: ["scout", "heavy", "zigzag"] },
+    { name: "ION STORM",              killsRequired: 16, spawnInterval: 1.2,  speedMod: 0.85, types: ["interceptor", "heavy", "bomber"] },
+    { name: "VOID ABYSS",             killsRequired: 18, spawnInterval: 1.1,  speedMod: 0.95, types: ["scout", "stealth", "heavy"] },
+    { name: "CRIMSON SQUADRON",       killsRequired: 20, spawnInterval: 1.0,  speedMod: 1.05, types: ["heavy", "stealth", "bomber"] },
+    { name: "ARMADA VANGUARD",        killsRequired: 22, spawnInterval: 0.85, speedMod: 1.18, types: ["interceptor", "heavy", "bomber", "stealth"] },
+    { name: "TITAN'S GATE",           killsRequired: 24, spawnInterval: 0.7,  speedMod: 1.35, types: ["heavy", "bomber", "stealth", "interceptor"] },
+    { name: "MEGA BOSS: CYBER-COLOSSUS", killsRequired: 1, spawnInterval: 999, speedMod: 1.5, types: ["boss"] }
   ];
 
   // Game state variables
@@ -429,17 +431,17 @@
     let color = "#9b72ff";
 
     if (type === "scout") {
-      w = 26; h = 20; hp = 1; speed = 105 * cfg.speedMod; color = "#54f6ff";
+      w = 26; h = 20; hp = 1; speed = 90 * cfg.speedMod; color = "#54f6ff";
     } else if (type === "interceptor") {
-      w = 24; h = 22; hp = 1; speed = 150 * cfg.speedMod; color = "#ffea54";
+      w = 24; h = 22; hp = 1; speed = 120 * cfg.speedMod; color = "#ffea54";
     } else if (type === "heavy") {
-      w = 40; h = 28; hp = 3; speed = 80 * cfg.speedMod; color = "#ff4fd8";
+      w = 40; h = 28; hp = 3; speed = 65 * cfg.speedMod; color = "#ff4fd8";
     } else if (type === "zigzag") {
-      w = 28; h = 22; hp = 2; speed = 110 * cfg.speedMod; color = "#63ffb0";
+      w = 28; h = 22; hp = 2; speed = 85 * cfg.speedMod; color = "#63ffb0";
     } else if (type === "bomber") {
-      w = 46; h = 32; hp = 4; speed = 75 * cfg.speedMod; color = "#ff5555";
+      w = 46; h = 32; hp = 4; speed = 55 * cfg.speedMod; color = "#ff5555";
     } else if (type === "stealth") {
-      w = 28; h = 24; hp = 2; speed = 125 * cfg.speedMod; color = "#bf6bff";
+      w = 28; h = 24; hp = 2; speed = 100 * cfg.speedMod; color = "#bf6bff";
     }
 
     enemies.push({
@@ -484,20 +486,24 @@
 
     if (player.tripleShotTimer > 0) {
       // 3-way spread laser
-      bullets.push({ x: player.x, y: player.y - 18, vx: 0, vy: -530 });
-      bullets.push({ x: player.x - 12, y: player.y - 14, vx: -90, vy: -510 });
-      bullets.push({ x: player.x + 12, y: player.y - 14, vx: 90, vy: -510 });
+      bullets.push({ x: player.x, y: player.y - 18, w: 8, h: 18, vx: 0, vy: -530 });
+      bullets.push({ x: player.x - 12, y: player.y - 14, w: 8, h: 18, vx: -90, vy: -510 });
+      bullets.push({ x: player.x + 12, y: player.y - 14, w: 8, h: 18, vx: 90, vy: -510 });
       addBurst(player.x, player.y - 20, "#54f6ff", 4);
     } else {
       // Standard laser
-      bullets.push({ x: player.x, y: player.y - 18, vx: 0, vy: -530 });
+      bullets.push({ x: player.x, y: player.y - 18, w: 8, h: 18, vx: 0, vy: -530 });
       addBurst(player.x, player.y - 20, "#54f6ff", 2);
     }
     playLaser();
   }
 
   function hit(a, b) {
-    return Math.abs(a.x - b.x) < (a.w + b.w) * 0.42 && Math.abs(a.y - b.y) < (a.h + b.h) * 0.42;
+    const aw = a.w || 8;
+    const ah = a.h || 12;
+    const bw = b.w || 8;
+    const bh = b.h || 12;
+    return Math.abs(a.x - b.x) < (aw + bw) * 0.5 && Math.abs(a.y - b.y) < (ah + bh) * 0.5;
   }
 
   // --- Main Update Loop ---
@@ -576,7 +582,7 @@
       const shootingEnemies = enemies.filter((e) => e.y > 20 && e.y < H - 120);
       if (shootingEnemies.length > 0) {
         const shooter = shootingEnemies[Math.floor(Math.random() * shootingEnemies.length)];
-        const bulletSpeed = 200 + currentStage * 12;
+        const bulletSpeed = 140 + currentStage * 18;
 
         if (shooter.type === "heavy" || shooter.type === "bomber") {
           // Dual laser
@@ -587,7 +593,7 @@
         }
         playEnemyLaser();
       }
-      enemyFireTimer = Math.max(0.35, 1.4 - currentStage * 0.09) + Math.random() * 0.3;
+      enemyFireTimer = Math.max(0.45, 2.0 - currentStage * 0.14) + Math.random() * 0.4;
     }
 
     // --- Update Bullets ---
